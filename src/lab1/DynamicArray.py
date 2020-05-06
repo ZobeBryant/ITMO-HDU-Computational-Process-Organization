@@ -1,6 +1,5 @@
-
+# mutable version
 import ctypes
-
 class DynamicArray():
 
     def __init__(self):
