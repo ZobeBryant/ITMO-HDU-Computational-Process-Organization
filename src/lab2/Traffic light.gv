@@ -1,0 +1,11 @@
+digraph "Traffic light" {
+	State0 [color=green]
+	State1 [color=yellow]
+	State2 [color=red]
+	State0 -> State0 [label="Keep Green[trigger()/action()]" color=green]
+	State0 -> State1 [label="Green2Yellow[trigger()/action()]" color=yellow]
+	State1 -> State1 [label="Keep Yellow[trigger()/action()]" color=yellow]
+	State1 -> State2 [label="Yellow2Red[trigger()/action()]" color=red]
+	State2 -> State2 [label="Keep Red[trigger()/action()]" color=red]
+	State2 -> State0 [label="Red2Greem[trigger()/action()]" color=green]
+}
