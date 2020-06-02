@@ -6,7 +6,7 @@
 
 ​	192050188 ZhaoQingbiao
 
-**3.laboratory work number: **3
+**3.laboratory work number: 3**
 
 **4.variant description:** 
 

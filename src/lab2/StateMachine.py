@@ -1,5 +1,4 @@
 from collections import OrderedDict, namedtuple
-import copy
 
 event = namedtuple("Event", "clock, state, light")
 
@@ -7,19 +6,11 @@ event = namedtuple("Event", "clock, state, light")
 class FiniteStateMachine(object):
     def __init__(self, name="anonymous"):
         self.name = name
-        self.inputs = OrderedDict()
-        self.outputs = OrderedDict()
         self.states = []
         self.transitions = []
         self.current_state = None
         self.event_history = []
         self.light_state_history = []
-
-    def input_port(self, name, latency=1):
-        self.inputs[name] = latency
-
-    def output_port(self, name, latency=1):
-        self.outputs[name] = latency
 
     def add_state(self, name, light):
         state = State(name, light)
@@ -43,11 +34,6 @@ class FiniteStateMachine(object):
                 self.current_state = state
                 break
 
-    # def pop_next_event(self, events):
-    #     assert len(events) > 0
-    #     event = events.pop(0)
-    #     return event, events
-
     def execute(self, start_state, total_clk, clk_n=0):
         clock = 0
         self.set_start_state(start_state)
@@ -57,13 +43,7 @@ class FiniteStateMachine(object):
             self.current_state, clk_n, tr = self.current_state.activate(clk_n)
             self.light_state_history.append((clock, self.current_state.light))
             self.event_history.append((clock, tr.name, clk_n))
-            print(clk_n, self.current_state.light)
         return self.current_state.light
-
-
-
-
-
 
 
 class State(object):
@@ -80,10 +60,7 @@ class State(object):
             if tr.trigger(clk_n):
                 clk_n = tr.action(clk_n)
                 return tr.next_state, clk_n, tr
-        return None,None,None
-
-
-
+        return None, None, None
 
 
 class Transition(object):
