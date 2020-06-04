@@ -1,7 +1,8 @@
+# mutable version
 import ctypes
 
 
-class ImmutableDynamicArray:
+class MutableDynamicArray:
 
     def __init__(self):
         self._start = 0
@@ -20,41 +21,37 @@ class ImmutableDynamicArray:
             raise ValueError('invalid index')
         return self._array[k]
 
+    def append(self, obj):
+        if self._size == self._capacity:
+            self._resize(2 * self._capacity)
+        self._array[self._size] = obj
+        self._size += 1
+
     @staticmethod
     def _make_array(c):
         return (c * ctypes.py_object)()
 
-    def append(self, obj):
-        if self._size == self._capacity:
-            self._capacity = self._capacity * 2
-        array_b = self._make_array(self._capacity)
-        for i in range(self._size):
-            array_b[i] = self._array[i]
-        array_b[self._size] = obj
-        self._size += 1
+    def _resize(self, c):
+        array_b = self._make_array(c)
+        for k in range(self._size):
+            array_b[k] = self._array[k]
         self._array = array_b
+        self._capacity = c
 
     def insert(self, k, value):
         if self._size == self._capacity:
-            self._capacity = self._capacity * 2
-        array_b = self._make_array(self._capacity)
-        for i in range(k):
-            array_b[i] = self._array[i]
-        array_b[k] = value
-        for i in range(self._size, k, -1):
-            array_b[i] = self._array[i - i]
-        self._array = array_b
+            self._resize(2 * self._capacity)
+        for j in range(self._size, k, -1):
+            self._array[j] = self._array[j - 1]
+        self._array[k] = value
         self._size += 1
 
     def remove(self, value):
-        for i in range(0, self._size):
-            if self._array[i] == value:
-                array_b = self._make_array(self._capacity)
-                for j in range(i):
-                    array_b[j] = self._array[j]
-                for j in range(i, self._size - 1):
-                    array_b[j] = self._array[j + 1]
-                self._array = array_b
+        for k in range(self._size):
+            if self._array[k] == value:
+                for j in range(k, self._size - 1):
+                    self._array[j] = self._array[j + 1]
+                self._array[self._size - 1] = None
                 self._size -= 1
                 return
         raise ValueError('value not found')
@@ -69,19 +66,12 @@ class ImmutableDynamicArray:
     def from_list(self, lst):
         if len(lst) == 0:
             return
-        while self._capacity < len(lst):
-            self._capacity = self._capacity * 2
-        self._size = len(lst)
-        array_b = self._make_array(self._capacity)
-        for i in range(self._size):
-            array_b[i] = lst[i]
-        self._array = array_b
+        for e in lst:
+            self.append(e)
 
     def map(self, f):
-        array_b = self._make_array(self._capacity)
         for i in range(self._size):
-            array_b[i] = f(self._array[i])
-        self._array = array_b
+            self._array[i] = f(self._array[i])
 
     def reduce(self, f, initial_state):
         state = initial_state
@@ -93,7 +83,8 @@ class ImmutableDynamicArray:
         return self
 
     def __next__(self):
-        if self._start <= self._size-1:
+
+        if self._start <= self._size - 1:
             res = self._array[self._start]
             self._start += 1
             return res
@@ -101,16 +92,10 @@ class ImmutableDynamicArray:
             raise StopIteration
 
     def concatenate(self, dynamic_array):
-        while self._capacity < self._size + dynamic_array.size():
-            self._capacity = self._capacity * 2
-        array_b = self._make_array(self._capacity)
-        for i in range(self._size):
-            array_b[i] = self._array[i]
         lst = dynamic_array.to_list()
-        for i in range(self._size, self._size + dynamic_array.size()):
-            array_b[i] = lst[i - self._size]
-        self._size = self._size + dynamic_array.size()
-        self._array = array_b
+        if dynamic_array.size() > 0:
+            for i in range(len(lst)):
+                self.append(lst[i])
         return self._array
 
     @staticmethod
@@ -133,4 +118,3 @@ class ImmutableDynamicArray:
         for i in range(len(res)):
             self.remove(res[i])
         return self._array
-
