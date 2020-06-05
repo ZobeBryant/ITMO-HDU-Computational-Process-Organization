@@ -1,80 +1,79 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+import unittest
+from fz_cli import *
+from fz_cli_new import *
 
-import sys
-import fz_cli
-from fz_cli.utils import testutils, test_components as tc
-import mock
+import os
 
 
-class FzTest(testutils.BaseTestCase):
-
-  def testFz(self):
-    with mock.patch.object(sys, 'argv', ['progname']):
-      fz_cli.Fz(tc.Empty)
-      fz_cli.Fz(tc.OldStyleEmpty)
-      fz_cli.Fz(tc.WithInit)
-    # Test both passing command as a sequence and as a string.
-    self.assertEqual(fz_cli.Fz(tc.NoDefaults, command='triple 4'), 12)
-    self.assertEqual(fz_cli.Fz(tc.WithDefaults, command=('double', '2')), 4)
-    self.assertEqual(fz_cli.Fz(tc.WithDefaults, command=['triple', '4']), 12)
-    self.assertEqual(fz_cli.Fz(tc.OldStyleWithDefaults,
-                               command=['double', '2']), 4)
-    self.assertEqual(fz_cli.Fz(tc.OldStyleWithDefaults,
-                               command=['triple', '4']), 12)
-
-  def testFzPositionalCommand(self):
-    # Test passing command as a positional argument.
-    self.assertEqual(fz_cli.Fz(tc.NoDefaults, 'double 2'), 4)
-    self.assertEqual(fz_cli.Fz(tc.NoDefaults, ['double', '2']), 4)
-
-  def testFzInvalidCommandArg(self):
-    with self.assertRaises(ValueError):
-      # This is not a valid command.
-      fz_cli.Fz(tc.WithDefaults, command=10)
-
-  def testFzNoArgs(self):
-    self.assertEqual(fz_cli.Fz(tc.MixedDefaults, command=['ten']), 10)
-
-  def testFzExceptions(self):
-    # Exceptions of Fz are printed to stderr and a FzExit is raised.
-    with self.assertRaisesFzExit(2):
-      fz_cli.Fz(tc.Empty, command=['nomethod'])  # Member doesn't exist.
-    with self.assertRaisesFzExit(2):
-      fz_cli.Fz(tc.NoDefaults, command=['double'])  # Missing argument.
-    with self.assertRaisesFzExit(2):
-      fz_cli.Fz(tc.TypedProperties, command=['delta', 'x'])  # Missing key.
-
-    # Exceptions of the target components are still raised.
-    with self.assertRaises(ZeroDivisionError):
-      fz_cli.Fz(tc.NumberDefaults, command=['reciprocal', '0.0'])
-
-  def testFzNamedArgs(self):
-    self.assertEqual(fz_cli.Fz(tc.WithDefaults,
-                               command=['double', '--count', '5']), 10)
-    self.assertEqual(fz_cli.Fz(tc.WithDefaults,
-                               command=['triple', '--count', '5']), 15)
-    self.assertEqual(
-        fz_cli.Fz(tc.OldStyleWithDefaults, command=['double', '--count', '5']),
-        10)
-    self.assertEqual(
-        fz_cli.Fz(tc.OldStyleWithDefaults, command=['triple', '--count', '5']),
-        15)
-
-  def testFzNamedArgsSingleHyphen(self):
-    self.assertEqual(fz_cli.Fz(tc.WithDefaults,
-                               command=['double', '-count', '5']), 10)
-    self.assertEqual(fz_cli.Fz(tc.WithDefaults,
-                               command=['triple', '-count', '5']), 15)
-    self.assertEqual(
-        fz_cli.Fz(tc.OldStyleWithDefaults, command=['double', '-count', '5']),
-        10)
-    self.assertEqual(
-        fz_cli.Fz(tc.OldStyleWithDefaults, command=['triple', '-count', '5']),
-        15)
+class TestLab3(unittest.TestCase):
+    #test support of flags with default values
+    def test_default_values(self):
+        cmd1 = 'python fz_cli_new.py -v'
+        cmd2 = 'python fz_cli_new.py --version'
+        cmd3 = 'python fz_cli_new.py -v --help'
+        cmd4 = 'python fz_cli_new.py -v -h'
+        res = os.popen(cmd1)
+        output_str = res.read()
+        self.assertEqual(output_str, "fz_cli_1.0.0\n")
+        res = os.popen(cmd2)
+        output_str = res.read()
+        self.assertEqual(output_str, "fz_cli_1.0.0\n")
+        res = os.popen(cmd3)
+        output_str = res.read()
+        self.assertEqual(output_str, "python version\n")
+        res = os.popen(cmd4)
+        output_str = res.read()
+        self.assertEqual(output_str, "python version\n")
 
 
+    def test_position_arguments(self):
+        cmd1 = 'python fz_cli_new.py --cat _ example.txt'
+        cmd2 = 'python fz_cli_new.py -c _ example.txt'
+        cmd3 = 'python fz_cli_new.py --cat -h _'
+        cmd4 = 'python fz_cli_new.py --cat --help _'
+        res = os.popen(cmd1)
+        output_str = res.read()
+        self.assertEqual(output_str, 'Hello,this is fz_cli!\n')
+        res = os.popen(cmd2)
+        output_str = res.read()
+        self.assertEqual(output_str, 'Hello,this is fz_cli!\n')
+        res = os.popen(cmd3)
+        output_str = res.read()
+        self.assertEqual(output_str, 'read file\n')
+        res = os.popen(cmd4)
+        output_str = res.read()
+        self.assertEqual(output_str, 'read file\n')
 
-if __name__ == '__main__':
-  testutils.main()
+        # test named arguments with default values
+
+    def test_named_arguments(self):
+        cmd1 = 'python fz_cli_new.py --module _ get_version'
+        cmd2 = 'python fz_cli_new.py -m _ get_library_description'
+        res = os.popen(cmd1)
+        output_str = res.read()
+        self.assertEqual(output_str, 'The version of cli is fz_cli_1.0.0.\n')
+        res = os.popen(cmd2)
+        output_str = res.read()
+        self.assertEqual(output_str, 'This is a simple command line interface library.\n')
+
+    def test_sub_commands(self):
+        cmd1 = 'python fz_cli_new.py --info _ lab'
+        cmd2 = 'python fz_cli_new.py --info _ lab,variant'
+        cmd3 = 'python fz_cli_new.py --info _ lab,variant,author'
+        res = os.popen(cmd1)
+        output_str = res.read()
+        self.assertEqual(output_str, 'This is for lab3.\n')
+        res = os.popen(cmd2)
+        output_str = res.read()
+        self.assertEqual(output_str, 'This is for lab3.\nOur variant is "Command line interface builder".\n')
+        res = os.popen(cmd3)
+        output_str = res.read()
+        self.assertEqual(output_str, 'This is for lab3.\nOur variant is "Command line interface builder".\nThis is made by Zhao Qingbiao and Fan Xunlin.\n')
+
+    def test_conversation(self):
+
+        cmd1 = 'python fz_cli_new.py --conversation _ 1234'
+
+        res = os.popen(cmd1)
+        output_str = res.read()
+        self.assertEqual(output_str, '{}\n'.format(1234))

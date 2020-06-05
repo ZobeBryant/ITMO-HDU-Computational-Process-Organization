@@ -33,25 +33,25 @@ Requirements:
 
 **6.contribution summary for each group member:** 
 
-​	ZhaoQingbiao: Write "fz_cli_core" and "test fz_cli".
+​	ZhaoQingbiao: Write "fz_cli".
 
-​	FanXulin: Write "trace" , the ReadMe and test "trace".
+​	FanXulin: Write "fz_cli_test" and "ReadMe".
 
 **7.explanation of taken design decisions and analysis:**
 
 ```
-Python Fz is a library for creating CLIs from absolutely any Python object.
+Python fz_cli is a library for creating CLIs from absolutely any Python object.
 
-You can call Fz on any Python object:
-functions, classes, modules, objects, lists, tuples, etc.
 
-Python Fz turns any Python object into a command line interface.
-Simply call the Fz function as your main method to create a CLI.
+Python fz_cli turns any Python object into a command line interface.
+Simply call the fz_cli function as your main method to create a CLI.
 
-When using Fz to build a CLI, your main method includes a call to Fz. Eg:
+When using fz_cli to build a CLI, your main method includes a call to Fz. Eg:
 
-def main(argv):
-  fz_cli.fz(Component)
+@cli.command(Option("","","",""))
+def test(argv):
+	print("This is for a test!")
+  
 ```
 
 **8.work demonstration:**
