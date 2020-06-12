@@ -15,7 +15,7 @@ class FiniteStateMachineTest(unittest.TestCase):
         fsm.add_transition("Red2Green", "Red", "Green", lambda clk_n: clk_n >= 6, lambda clk_n: 1)
         fsm.add_transition("Keep Red", "Red", "Red", lambda clk_n: clk_n < 6, lambda clk_n: clk_n+1)
 
-        actual = fsm.execute("Green", total_clk=14, clk_n=0)
+        actual = fsm.execute("Green", 14, 0)
         expect = {'Green':True, 'Yellow':False, 'Red':False}
         self.assertEqual(actual, expect)
         self.assertEqual(fsm.light_state_history,[
@@ -109,6 +109,29 @@ class FiniteStateMachineTest(unittest.TestCase):
                   'W-E Green': False, 'W-E Yellow': False, 'W-E Red': True }
         self.assertEqual(actual, expect)
 
+    def test_add_state(self):
+        fsm = FiniteStateMachine("Crossroad Traffic Light")
+        self.assertEqual(fsm.add_state(0,{'Green':True, 'Yellow':False, 'Red':False}),"positional argument 1 should be a string")
+        self.assertEqual(fsm.add_state("Green",[1,2,3,4]),"positional argument 2 should be a type of dict")
+
+    def test_add_transition(self):
+        fsm = FiniteStateMachine("Crossroad Traffic Light")
+        self.assertEqual(fsm.add_transition(0,"Green","Yellow",lambda clk_n: clk_n >= 5, lambda clk_n: 1),"positional argument 1 should be a string")
+        self.assertEqual(fsm.add_transition("Green2Yellow",0,"Yellow",lambda clk_n: clk_n >= 5, lambda clk_n: 1),"positional argument 2 should be a string")
+        self.assertEqual(fsm.add_transition("Green2Yellow","Green",0,lambda clk_n: clk_n >= 5, lambda clk_n: 1),"positional argument 3 should be a string")
+        self.assertEqual(fsm.add_transition("Green2Yellow","Green","Yellow","test", lambda clk_n: 1),"positional argument 4 should be a function")
+        self.assertEqual(fsm.add_transition("Green2Yellow","Green","Yellow",lambda clk_n: clk_n >= 5, "test"),"positional argument 5 should be a function")
+
+    def test_set_start_state(self):
+        fsm = FiniteStateMachine("Crossroad Traffic Light")
+        self.assertEqual(fsm.set_start_state(0),"positional argument 1 should be a string")
+
+    def test_execute(self):
+        fsm = FiniteStateMachine("Crossroad Traffic Light")
+        self.assertEqual(fsm.execute(0,14),"positional argument 1 should be a string")
+        self.assertEqual(fsm.execute("Green","test"),"positional argument 2 should be a type of int")
+
+
 class NodeTest(unittest.TestCase):
     def test_state(self):
         green = State("Green",{'Green':True, 'Yellow':False, 'Red':False})
@@ -131,7 +154,13 @@ class NodeTest(unittest.TestCase):
         expect = (None,None,None)
         self.assertEqual(actual, expect)
 
+    def test_set_transition(self):
+        green = State("Green", {'Green': True, 'Yellow': False, 'Red': False})
+        self.assertEqual(green.set_transition(0),"positional argument 1 should be a type of Transition")
 
+    def test_activate(self):
+        green = State("Green", {'Green': True, 'Yellow': False, 'Red': False})
+        self.assertEqual(green.activate("test"),"positional argument 1 should be a type of int")
 
 if __name__ == '__main__':
     unittest.main()

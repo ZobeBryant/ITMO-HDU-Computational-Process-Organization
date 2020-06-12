@@ -1,5 +1,4 @@
-
-from src.lab2.StateMachineWithInputControl import FiniteStateMachine
+from src.lab2.StateMachine import *
 fsm = FiniteStateMachine("One Way Traffic Light")
 
 fsm.add_state("Green",{'Green':True, 'Yellow':False, 'Red':False})
