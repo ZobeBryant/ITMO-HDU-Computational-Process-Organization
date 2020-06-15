@@ -7,7 +7,7 @@ def accepts():
         @wraps(f)
         def new_f(*args):
             if type(args[1])!=str:
-               return("positional argument 1 should be a string")
+               raise TypeError("positional argument 1 should be a string")
             return f(*args)
         return new_f
 
@@ -18,9 +18,9 @@ def accepts_add_state():
         @wraps(f)
         def new_f(*args):
             if type(args[1])!=str:
-                return("positional argument 1 should be a string")
+                raise TypeError("positional argument 1 should be a string")
             if type(args[2])!=dict:
-               return("positional argument 2 should be a type of dict")
+               raise TypeError("positional argument 2 should be a type of dict")
             return f(*args)
         return new_f
 
@@ -31,15 +31,15 @@ def accepts_add_transition():
         @wraps(f)
         def new_f(*args):
             if type(args[1])!=str:
-               return("positional argument 1 should be a string")
+               raise TypeError("positional argument 1 should be a string")
             if type(args[2])!=str:
-               return("positional argument 2 should be a string")
+               raise TypeError("positional argument 2 should be a string")
             if type(args[3])!=str:
-               return("positional argument 3 should be a string")
+               raise TypeError("positional argument 3 should be a string")
             if not hasattr(args[4],"__call__"):
-                return("positional argument 4 should be a function")
+                raise TypeError("positional argument 4 should be a function")
             if not hasattr(args[5],"__call__"):
-                return ("positional argument 5 should be a function")
+                raise TypeError("positional argument 5 should be a function")
 
             return f(*args)
         return new_f
@@ -50,7 +50,7 @@ def accepts_set_transition(f):
     @wraps(f)
     def new_f(*args):
         if type(args[1])!=Transition:
-            return ("positional argument 1 should be a type of Transition")
+            raise TypeError("positional argument 1 should be a type of Transition")
         return f(*args)
     return new_f
 
@@ -60,7 +60,7 @@ def accepts_activate(f):
     @wraps(f)
     def new_f(*args):
         if type(args[1])!=int:
-            return("positional argument 1 should be a type of int")
+            raise TypeError("positional argument 1 should be a type of int")
         return f(*args)
 
     return new_f
@@ -71,9 +71,9 @@ def accepts_execute():
         def new_f(*args):
             #print(args)
             if type(args[1])!=str:
-               return ("positional argument 1 should be a string")
+               raise TypeError("positional argument 1 should be a string")
             if type(args[2])!=int:
-               return ("positional argument 2 should be a type of int")
+               raise TypeError("positional argument 2 should be a type of int")
             return f(*args)
         return new_f
 
