@@ -1,5 +1,5 @@
 import unittest
-from src.lab3.fz_cli import *
+from fz_cli import *
 
 
 import os
@@ -14,15 +14,19 @@ class TestLab3(unittest.TestCase):
         cmd4 = 'python fz_cli.py -v -h'
         res = os.popen(cmd1)
         output_str = res.read()
+        res.close()
         self.assertEqual(output_str, "fz_cli_1.0.0\n")
         res = os.popen(cmd2)
         output_str = res.read()
+        res.close()
         self.assertEqual(output_str, "fz_cli_1.0.0\n")
         res = os.popen(cmd3)
         output_str = res.read()
+        res.close()
         self.assertEqual(output_str, "python version\n")
         res = os.popen(cmd4)
         output_str = res.read()
+        res.close()
         self.assertEqual(output_str, "python version\n")
 
 
@@ -33,15 +37,19 @@ class TestLab3(unittest.TestCase):
         cmd4 = 'python fz_cli.py --cat --help _'
         res = os.popen(cmd1)
         output_str = res.read()
+        res.close()
         self.assertEqual(output_str, 'Hello,this is fz_cli!\n')
         res = os.popen(cmd2)
         output_str = res.read()
+        res.close()
         self.assertEqual(output_str, 'Hello,this is fz_cli!\n')
         res = os.popen(cmd3)
         output_str = res.read()
+        res.close()
         self.assertEqual(output_str, 'read file\n')
         res = os.popen(cmd4)
         output_str = res.read()
+        res.close()
         self.assertEqual(output_str, 'read file\n')
 
         # test named arguments with default values
@@ -51,9 +59,11 @@ class TestLab3(unittest.TestCase):
         cmd2 = 'python fz_cli.py -m _ get_library_description'
         res = os.popen(cmd1)
         output_str = res.read()
+        res.close()
         self.assertEqual(output_str, 'The version of cli is fz_cli_1.0.0.\n')
         res = os.popen(cmd2)
         output_str = res.read()
+        res.close()
         self.assertEqual(output_str, 'This is a simple command line interface library.\n')
 
     def test_sub_commands(self):
@@ -62,12 +72,15 @@ class TestLab3(unittest.TestCase):
         cmd3 = 'python fz_cli.py --info _ lab,variant,author'
         res = os.popen(cmd1)
         output_str = res.read()
+        res.close()
         self.assertEqual(output_str, 'This is for lab3.\n')
         res = os.popen(cmd2)
         output_str = res.read()
+        res.close()
         self.assertEqual(output_str, 'This is for lab3.\nOur variant is "Command line interface builder".\n')
         res = os.popen(cmd3)
         output_str = res.read()
+        res.close()
         self.assertEqual(output_str, 'This is for lab3.\nOur variant is "Command line interface builder".\nThis is made by Zhao Qingbiao and Fan Xunlin.\n')
 
     def test_conversation(self):
@@ -76,4 +89,8 @@ class TestLab3(unittest.TestCase):
 
         res = os.popen(cmd1)
         output_str = res.read()
+        res.close()
         self.assertEqual(output_str, '{}\n'.format(1234))
+
+if __name__=="__main__":
+    unittest.main()
